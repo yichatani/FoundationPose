@@ -1,3 +1,5 @@
+import os
+import time
 import pyk4a
 from pyk4a import Config, PyK4A
 import numpy as np
@@ -139,6 +141,8 @@ class Camera:
                 # convert RGB to BGR for OpenCV vis
                 color_display = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
                 
+                if frame_count % 3 == 0:
+                    self.save_frame(color_image,depth_aligned,save_dir='/home/ani/FoundationPose/save_dir')
                 # horizontal stack RGB and Depth
                 combined = np.hstack([color_display, depth_colormap])
                 
@@ -180,9 +184,30 @@ class Camera:
             print(f"Total frames: {frame_count}")
 
 
+    def save_frame(self, color_image, depth_image, save_dir="kinect_data"):
+        """Save RGB + Depth, file name is timestamp"""
+
+        rgb_dir = os.path.join(save_dir, "rgb")
+        depth_dir = os.path.join(save_dir, "depth")
+        os.makedirs(rgb_dir, exist_ok=True)
+        os.makedirs(depth_dir, exist_ok=True)
+
+        timestamp = str(int(time.time() * 1000))
+
+        rgb_path = os.path.join(rgb_dir, f"{timestamp}.png")
+        depth_path = os.path.join(depth_dir, f"{timestamp}.png")
+
+        cv2.imwrite(rgb_path, cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR))
+
+        cv2.imwrite(depth_path, depth_image)
+
+        print(f"[Saved] RGB: {rgb_path}")
+        print(f"[Saved] Depth: {depth_path}")
+
+
 if __name__ == "__main__":
 
     camera = Camera()
-    camera.k4a_calibration()
+    # camera.k4a_calibration()
 
-    # camera.visualize_kinect_stream()
+    camera.visualize_kinect_stream()
