@@ -120,6 +120,11 @@ class Camera:
         try:
             while True:
                 color_image, depth_aligned = self.get_k4a_img_depth()
+                color_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
+
+                # (1280, 720)
+                color_image = cv2.resize(color_image, (640, 480), interpolation=cv2.INTER_LINEAR)
+                depth_aligned = cv2.resize(depth_aligned, (640, 480), interpolation=cv2.INTER_NEAREST)
                 
                 # depth vislualize (normalize to 0-255)
                 depth_viz = depth_aligned.copy()
@@ -139,12 +144,11 @@ class Camera:
                 depth_colormap = cv2.applyColorMap(depth_display, cv2.COLORMAP_JET)
                 
                 # convert RGB to BGR for OpenCV vis
-                color_display = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
                 
                 if frame_count % 3 == 0:
                     self.save_frame(color_image,depth_aligned,save_dir='/home/ani/FoundationPose/save_dir')
                 # horizontal stack RGB and Depth
-                combined = np.hstack([color_display, depth_colormap])
+                combined = np.hstack([color_image, depth_colormap])
                 
                 # Add Text
                 cv2.putText(combined, f"Frame: {frame_count}", (10, 30), 
@@ -197,7 +201,7 @@ class Camera:
         rgb_path = os.path.join(rgb_dir, f"{timestamp}.png")
         depth_path = os.path.join(depth_dir, f"{timestamp}.png")
 
-        cv2.imwrite(rgb_path, cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR))
+        cv2.imwrite(rgb_path, color_image)
 
         cv2.imwrite(depth_path, depth_image)
 
