@@ -45,6 +45,14 @@ if __name__=='__main__':
 
   reader = YcbineoatReader(video_dir=args.test_scene_dir, shorter_side=None, zfar=np.inf)
 
+
+  video_path = f"{debug_dir}/tracking_video.mp4"
+  fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+  fps = 15
+  h, w = reader.get_color(0).shape[:2]
+  writer = cv2.VideoWriter(video_path, fourcc, fps, (w, h))
+
+
   for i in range(len(reader.color_files)):
     logging.info(f'i:{i}')
     color = reader.get_color(i)
@@ -75,8 +83,12 @@ if __name__=='__main__':
       # cv2.waitKey(1)
       cv2.waitKey(10)
 
+      writer.write(vis[..., ::-1])
+
 
     if debug>=2:
       os.makedirs(f'{debug_dir}/track_vis', exist_ok=True)
       imageio.imwrite(f'{debug_dir}/track_vis/{reader.id_strs[i]}.png', vis)
 
+  writer.release()
+  print("Video saved to:", video_path)
