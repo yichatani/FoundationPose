@@ -61,11 +61,11 @@ htmlcov/
 .coverage.*
 .cache
 nosetests.xml
-demo_data/
+# demo_data/
 debug/
 coverage.xml
 *.cover
-demo_data/
+# demo_data/
 debug/
 weights/
 *.py,cover
@@ -158,3 +158,5 @@ logs/
 run_used.yml
 
 save_dir/
+
+!demo_data/mouse/
